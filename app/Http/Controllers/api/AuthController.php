@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\api\auth\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -19,8 +21,10 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $body->email, 'password' => $body->password])) {
             $user = User::where('email', $body->email)->firstOrFail();
             $token = $user->createToken($user->email . "_first Party")->plainTextToken;
+            $refreshToken = $user->createToken($user->email . "_first Party", [], Carbon::now()->addMinutes(10))->plainTextToken;
             return response()->json([
                 'token' => $token,
+                'refresh_token' => $refreshToken,
                 'user' => $user
             ], Response::HTTP_OK);
         }
@@ -38,8 +42,10 @@ class AuthController extends Controller
             'password' => Hash::make($body->password),
         ]);
         $token = $user->createToken($user->email . "_first Party")->plainTextToken;
+        $refreshToken = $user->createToken($user->email . "_first Party", [], Carbon::now()->addMinutes(10))->plainTextToken;
         return response()->json([
             'token' => $token,
+            'refresh_token' => $refreshToken,
             'user' => $user
         ]);
     }
@@ -50,5 +56,15 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'lu kenapa logout kontol'
         ], Response::HTTP_OK);
+    }
+
+    public function refresh(Request $request)
+    {
+        $authorizationHeader  = $request->header('Authorization');
+        $token = explode('|', $authorizationHeader)[1];
+        $match = DB::table('personal_access_tokens')->where('token', Hash('sha256', $token))->first();
+        // ini udah dapet match refresh token.
+        // besok terusin create token baru dan refresh token berdasarkan tokenable_id dari refresh token tersebut
+        return $match;
     }
 }
