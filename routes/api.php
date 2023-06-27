@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware(['auth:sanctum', 'abilities'])->get('/user', function (Request $request) {
+    // $user = $request->user();
+
+    // dd($user);
     return $request->user();
 });
 

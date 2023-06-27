@@ -21,7 +21,7 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $body->email, 'password' => $body->password])) {
             $user = User::where('email', $body->email)->firstOrFail();
             $token = $user->createToken($user->email . "_first Party")->plainTextToken;
-            $refreshToken = $user->createToken($user->email . "_first Party", [], Carbon::now()->addMinutes(10))->plainTextToken;
+            $refreshToken = $user->createToken($user->email . "_first Party", ['bolehread:user'], Carbon::now()->addMinutes(2))->plainTextToken;
             return response()->json([
                 'token' => $token,
                 'refresh_token' => $refreshToken,
@@ -29,7 +29,7 @@ class AuthController extends Controller
             ], Response::HTTP_OK);
         }
         return response()->json([
-            'message' => 'Unauthorized'
+            'message' => 'These credentials do not match our records'
         ], Response::HTTP_UNAUTHORIZED);
     }
 
@@ -65,6 +65,12 @@ class AuthController extends Controller
         $match = DB::table('personal_access_tokens')->where('token', Hash('sha256', $token))->first();
         // ini udah dapet match refresh token.
         // besok terusin create token baru dan refresh token berdasarkan tokenable_id dari refresh token tersebut
-        return $match;
+        if ($match->expires_at && $match->expires_at > Carbon::now()) {
+            return $match;
+        }
+
+        return response()->json([
+            'message' => 'Unauthorized'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 }
