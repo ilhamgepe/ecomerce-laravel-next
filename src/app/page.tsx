@@ -13,7 +13,7 @@ export default function Home() {
       <Text>Hello world</Text>
       <Button onClick={() => signIn()}>Login</Button>
       <Button onClick={() => signOut()}>Logout</Button>
-      <ToggleColorScheme my={"sm"} />
+
       {session && (
         <Prism language="json" withLineNumbers>
           {JSON.stringify(session, null, 2)}

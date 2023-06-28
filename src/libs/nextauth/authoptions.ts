@@ -9,6 +9,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     maxAge: 60 * 60,
   },
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -31,13 +32,23 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
+      // @ts-ignore
       async authorize(credentials, req) {
         const { data, status } = await axios.post("/auth/login", {
           email: credentials?.email,
           password: credentials?.password,
         });
+        const user = {
+          token: data.token,
+          refresh_token: data.refresh_token,
+          name: data.user.name,
+          email: data.user.email,
+          email_verified_at: data.user.email_verified_at,
+          created_at: data.user.created_at,
+          updated_at: data.user.updated_at,
+        };
 
-        return data;
+        return user;
       },
     }),
   ],
@@ -53,7 +64,7 @@ export const authOptions: NextAuthOptions = {
       // });
 
       if (user) {
-        token.user = { ...user };
+        token.user = { ...account, ...user };
       }
       if (account?.provider === "google") {
         // console.log(chalk.bgGreen("google account"), { account });
@@ -63,7 +74,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      return { ...session, ...(session.user = token) };
+      return { ...session, ...token };
     },
   },
 };
