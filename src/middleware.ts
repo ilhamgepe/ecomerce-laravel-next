@@ -1,19 +1,19 @@
-import { NextApiRequest } from "next";
 import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
 import {} from "next-auth/middleware";
+import { NextURL } from "next/dist/server/web/next-url";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function middleware(request: NextApiRequest) {
+function matchPathName(url: NextURL, pathname: string[]) {
+  return pathname.some((stringUrl) => url.pathname === stringUrl);
+}
+export async function middleware(request: NextRequest) {
   const session = await getToken({ req: request });
-  if (!session) {
-    console.log({ session });
-
+  const url = request.nextUrl.clone();
+  if (matchPathName(url, ["/dashboard", "/user"]) && !session) {
     return NextResponse.redirect(
       new URL("http://localhost:3000/api/auth/signin", request.url)
     );
   }
-}
 
-export const config = {
-  matcher: ["/dashboard", "/me"],
-};
+  // return NextResponse.next();
+}
