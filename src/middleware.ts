@@ -15,5 +15,11 @@ export async function middleware(request: NextRequest) {
     );
   }
 
+  if (matchPathName(url, ["/api/auth/signin"]) && session) {
+    return NextResponse.redirect(
+      new URL("http://localhost:3000/dashboard", request.url)
+    );
+  }
+
   // return NextResponse.next();
 }
