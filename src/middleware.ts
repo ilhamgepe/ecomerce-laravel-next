@@ -11,11 +11,11 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   if (matchPathName(url, ["/dashboard", "/user"]) && !session) {
     return NextResponse.redirect(
-      new URL("http://localhost:3000/api/auth/signin", request.url)
+      new URL("http://localhost:3000/auth/signin", request.url)
     );
   }
 
-  if (matchPathName(url, ["/api/auth/signin"]) && session) {
+  if (matchPathName(url, ["/auth/signin"]) && session) {
     return NextResponse.redirect(
       new URL("http://localhost:3000/dashboard", request.url)
     );

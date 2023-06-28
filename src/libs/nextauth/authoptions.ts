@@ -77,4 +77,9 @@ export const authOptions: NextAuthOptions = {
       return { ...session, ...token };
     },
   },
+  pages: {
+    signIn: "/auth/signin",
+    signOut: "/auth/signout",
+    error: "/auth/error",
+  },
 };
