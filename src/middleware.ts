@@ -7,17 +7,17 @@ function matchPathName(url: NextURL, pathname: string[]) {
   return pathname.some((stringUrl) => url.pathname === stringUrl);
 }
 export async function middleware(request: NextRequest) {
-  // const session = await getToken({ req: request });
-  // const url = request.nextUrl.clone();
-  // if (matchPathName(url, ["/dashboard", "/user"]) && !session) {
-  //   return NextResponse.redirect(
-  //     new URL("http://localhost:3000/auth/signin", request.url)
-  //   );
-  // }
-  // if (matchPathName(url, ["/auth/signin"]) && session) {
-  //   return NextResponse.redirect(
-  //     new URL("http://localhost:3000/dashboard", request.url)
-  //   );
-  // }
-  // return NextResponse.next();
+  const session = await getToken({ req: request });
+  const url = request.nextUrl.clone();
+  if (matchPathName(url, ["/dashboard", "/user"]) && !session) {
+    return NextResponse.redirect(
+      new URL("http://localhost:3000/auth/signin", request.url)
+    );
+  }
+  if (matchPathName(url, ["/auth/signin"]) && session) {
+    return NextResponse.redirect(
+      new URL("http://localhost:3000/dashboard", request.url)
+    );
+  }
+  return NextResponse.next();
 }
