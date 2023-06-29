@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { axios } from "../axios/axios";
 import chalk from "chalk";
+import { error } from "console";
+import { AxiosError, AxiosInstance } from "axios";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -34,21 +36,30 @@ export const authOptions: NextAuthOptions = {
       },
       // @ts-ignore
       async authorize(credentials, req) {
-        const { data, status } = await axios.post("/auth/login", {
-          email: credentials?.email,
-          password: credentials?.password,
-        });
-        const user = {
-          token: data.token,
-          refresh_token: data.refresh_token,
-          name: data.user.name,
-          email: data.user.email,
-          email_verified_at: data.user.email_verified_at,
-          created_at: data.user.created_at,
-          updated_at: data.user.updated_at,
-        };
+        try {
+          const { data, status } = await axios.post("/auth/login", {
+            email: credentials?.email,
+            password: credentials?.password,
+          });
 
-        return user;
+          const user = {
+            token: data.token,
+            refresh_token: data.refresh_token,
+            name: data.user.name,
+            email: data.user.email,
+            email_verified_at: data.user.email_verified_at,
+            created_at: data.user.created_at,
+            updated_at: data.user.updated_at,
+          };
+
+          return user;
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message);
+          }
+          // @ts-ignore
+          throw new Error(error);
+        }
       },
     }),
   ],
@@ -80,6 +91,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
-    error: "/auth/error",
+    error: "/auth/signin",
   },
 };

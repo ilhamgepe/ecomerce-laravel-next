@@ -12,6 +12,7 @@ import {
   TextInput,
   Text,
   Divider,
+  Loader,
 } from "@mantine/core";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,8 +20,13 @@ import { FormSignin, SignInSchema } from "./schema";
 import { getProviders, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const SigninPage = () => {
+  const [loading, setLoading] = useState(false);
+  const [errorSignin, setErrorSignin] = useState<string | undefined>("");
+  const router = useRouter();
+
   const {
     handleSubmit,
     register,
@@ -42,14 +48,23 @@ const SigninPage = () => {
           </Center>
         </Card.Section>
         <form
-          onSubmit={handleSubmit((value) =>
+          onSubmit={handleSubmit((value) => {
+            setLoading(true);
             signIn("credentials", {
               ...value,
-              redirect: true,
-              callbackUrl: "/dashboard",
-            })
-          )}
+              redirect: false,
+            }).then((e) => {
+              if (e?.error === null) {
+                router.replace("/dashboard");
+              }
+              setLoading(false);
+              setErrorSignin(e?.error);
+            });
+          })}
         >
+          <Text align="center" color="red" weight={500} italic>
+            {errorSignin}
+          </Text>
           <TextInput
             placeholder="your@mail.com"
             type="email"
@@ -65,8 +80,8 @@ const SigninPage = () => {
             {...register("password")}
             error={errors.password?.message}
           />
-          <Button type="submit" fullWidth color="yellow">
-            Submit
+          <Button type="submit" fullWidth color="yellow" disabled={loading}>
+            {loading ? <Loader size={"sm"} /> : "Submit"}
           </Button>
         </form>
         <Divider
@@ -91,11 +106,12 @@ const SigninPage = () => {
             }
             size="md"
             fullWidth
+            disabled={loading}
             onClick={() =>
               signIn("google", { redirect: true, callbackUrl: "/dashboard" })
             }
           >
-            Sign In with Google
+            Continue with Google
           </Button>
         </Flex>
       </Card>
