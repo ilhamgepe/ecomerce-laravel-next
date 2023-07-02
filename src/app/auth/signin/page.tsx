@@ -54,11 +54,11 @@ const SigninPage = () => {
               ...value,
               redirect: false,
             }).then((e) => {
-              if (e?.error === null) {
-                router.replace("/dashboard");
+              if (e?.error !== null) {
+                setLoading(false);
+                setErrorSignin(e?.error);
               }
-              setLoading(false);
-              setErrorSignin(e?.error);
+              return router.replace("/dashboard");
             });
           })}
         >
@@ -88,7 +88,7 @@ const SigninPage = () => {
           my="xs"
           label={
             <Text size={"md"} weight={500}>
-              Login with Google
+              OR
             </Text>
           }
           labelPosition="center"

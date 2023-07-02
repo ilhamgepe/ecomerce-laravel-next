@@ -7,8 +7,18 @@ const AppShell = ({ children }: { children: ReactNode }) => {
   const [opened, setOpened] = useState(false);
   return (
     <MantineAppShell
+      styles={{
+        main: {
+          background:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[8]
+              : theme.colors.gray[0],
+        },
+      }}
+      navbarOffsetBreakpoint="sm"
+      asideOffsetBreakpoint="sm"
       padding="md"
-      navbar={<Navbar />}
+      navbar={<Navbar opened={opened} />}
       header={<Header opened={opened} setOpened={setOpened} theme={theme} />}
     >
       {children}

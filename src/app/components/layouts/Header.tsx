@@ -1,12 +1,14 @@
 "use client";
 import {
   Burger,
+  Button,
+  Group,
   Header as MantineHeader,
   MantineTheme,
   MediaQuery,
   Text,
 } from "@mantine/core";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Dispatch, SetStateAction } from "react";
 import ToggleColorScheme from "../colorScheme/ToggleColorScheme";
 const Header = ({
@@ -19,11 +21,17 @@ const Header = ({
   theme: MantineTheme;
 }) => {
   const { data: session } = useSession();
-  console.log({ session });
 
   return (
     <MantineHeader height={{ base: 50, md: 70 }} p="md">
-      <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          height: "100%",
+        }}
+      >
         <MediaQuery largerThan="sm" styles={{ display: "none" }}>
           <Burger
             opened={opened}
@@ -34,9 +42,15 @@ const Header = ({
           />
         </MediaQuery>
 
-        {/* @ts-ignore */}
-        <Text>{session?.user?.name || "anjing"}</Text>
-        <ToggleColorScheme my={"sm"} />
+        <Group>
+          {session?.user?.name && <Text>{session?.user?.name}</Text>}
+        </Group>
+        <Group>
+          <ToggleColorScheme my={"sm"} />
+          <Button onClick={() => signOut()} variant="subtle" size="xs">
+            Logout
+          </Button>
+        </Group>
       </div>
     </MantineHeader>
   );

@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
       new URL("http://localhost:3000/auth/signin", request.url)
     );
   }
-  if (matchPathName(url, ["/auth/signin"]) && session) {
+  if (matchPathName(url, ["/auth/signin", "/"]) && session) {
     return NextResponse.redirect(
       new URL("http://localhost:3000/dashboard", request.url)
     );
