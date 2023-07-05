@@ -43,7 +43,7 @@ export const authOptions: NextAuthOptions = {
           });
 
           const user = {
-            token: data.token,
+            access_token: data.access_token,
             refresh_token: data.refresh_token,
             name: data.user.name,
             email: data.user.email,

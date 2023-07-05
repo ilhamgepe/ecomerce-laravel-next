@@ -17,7 +17,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormSignin, SignInSchema } from "./schema";
-import { getProviders, signIn } from "next-auth/react";
+import { getProviders, signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -26,6 +26,7 @@ const SigninPage = () => {
   const [loading, setLoading] = useState(false);
   const [errorSignin, setErrorSignin] = useState<string | undefined>("");
   const router = useRouter();
+  const { status } = useSession();
 
   const {
     handleSubmit,
@@ -38,6 +39,12 @@ const SigninPage = () => {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status]);
 
   return (
     <Flex align="center" justify="center" mih="100vh">
@@ -58,7 +65,7 @@ const SigninPage = () => {
                 setLoading(false);
                 setErrorSignin(e?.error);
               }
-              return router.replace("/dashboard");
+              router.replace("/dashboard");
             });
           })}
         >

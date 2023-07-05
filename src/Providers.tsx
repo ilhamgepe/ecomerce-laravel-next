@@ -3,6 +3,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import MantineProvider from "./app/components/providers/MantineProvider";
 import { SessionProvider } from "next-auth/react";
+import { Notifications } from "@mantine/notifications";
 
 const Providers = ({ children }: { children: ReactNode }) => {
   const [mounted, setMounted] = useState(false);
@@ -10,7 +11,10 @@ const Providers = ({ children }: { children: ReactNode }) => {
   if (!mounted) return;
   return (
     <SessionProvider>
-      <MantineProvider>{children}</MantineProvider>
+      <MantineProvider>
+        <Notifications />
+        {children}
+      </MantineProvider>
     </SessionProvider>
   );
 };

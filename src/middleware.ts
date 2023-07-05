@@ -9,7 +9,10 @@ function matchPathName(url: NextURL, pathname: string[]) {
 export async function middleware(request: NextRequest) {
   const session = await getToken({ req: request });
   const url = request.nextUrl.clone();
-  if (matchPathName(url, ["/dashboard", "/user"]) && !session) {
+  if (
+    matchPathName(url, ["/dashboard", "/user", "/dashboard/13-file-storage"]) &&
+    !session
+  ) {
     return NextResponse.redirect(
       new URL("http://localhost:3000/auth/signin", request.url)
     );
