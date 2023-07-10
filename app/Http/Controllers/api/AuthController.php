@@ -23,7 +23,7 @@ class AuthController extends Controller
             $token = $user->createToken($user->email . "_first Party")->plainTextToken;
             $refreshToken = $user->createToken($user->email . "_first Party", ['bolehread:user'], Carbon::now()->addMinutes(2))->plainTextToken;
             return response()->json([
-                'token' => $token,
+                'access_token' => $token,
                 'refresh_token' => $refreshToken,
                 'user' => $user
             ], Response::HTTP_OK);
@@ -44,7 +44,7 @@ class AuthController extends Controller
         $token = $user->createToken($user->email . "_first Party")->plainTextToken;
         $refreshToken = $user->createToken($user->email . "_first Party", [], Carbon::now()->addMinutes(10))->plainTextToken;
         return response()->json([
-            'token' => $token,
+            'access_token' => $token,
             'refresh_token' => $refreshToken,
             'user' => $user
         ]);

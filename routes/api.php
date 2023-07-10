@@ -1,6 +1,8 @@
 <?php
 
+
 use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\api\F13FileStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,10 +18,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth:sanctum', 'abilities'])->get('/user', function (Request $request) {
-    // $user = $request->user();
-
-    // dd($user);
     return $request->user();
+});
+
+// 13 file storage
+Route::prefix('F13')->middleware(['auth:sanctum'])->group(function () {
+    Route::post('/upload', [F13FileStorage::class, 'upload']);
+    Route::get('/test', [F13FileStorage::class, 'babi']);
 });
 
 
