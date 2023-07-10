@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\api\F13\FileStorageController;
 use App\Http\Controllers\api\F13FileStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,8 +24,8 @@ Route::middleware(['auth:sanctum', 'abilities'])->get('/user', function (Request
 
 // 13 file storage
 Route::prefix('F13')->middleware(['auth:sanctum'])->group(function () {
-    Route::post('/upload', [F13FileStorage::class, 'upload']);
-    Route::get('/test', [F13FileStorage::class, 'babi']);
+    Route::post('/upload', [FileStorageController::class, 'upload']);
+    Route::get('/test', [FileStorageController::class, 'babi']);
 });
 
 

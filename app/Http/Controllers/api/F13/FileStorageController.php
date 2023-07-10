@@ -1,31 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\api\F13;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
-class F13FileStorage extends Controller
+class FileStorageController extends Controller
 {
     public function upload(Request $request)
     {
 
-        // dd($request->file('image'));
 
-        if (!$request->hasFile('image')) {
-            return response()->json([
-                'nothingFound' => $request
-            ], Response::HTTP_BAD_REQUEST);
-        }
+        $request->validate([
+            'image' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+        ]);
+
 
         $uploadedFile = $request->file('image');
-        if ($uploadedFile->getSize() > 50 * 1024 * 1024) {
-            return response()->json([
-                'message' => 'File is too big'
-            ], Response::HTTP_BAD_REQUEST);
-        }
         $filename = str_replace(' ', '_', $uploadedFile->getClientOriginalName());
         $uploadedFile->storeAs('images', $filename);
 
