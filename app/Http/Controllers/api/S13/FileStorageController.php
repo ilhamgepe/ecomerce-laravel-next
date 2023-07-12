@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\F13;
+namespace App\Http\Controllers\api\S13;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

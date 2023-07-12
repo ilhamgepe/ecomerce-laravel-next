@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\api\F13FileStorage;
+use App\Http\Controllers\api\S13\FileStorageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/hello', [F13FileStorage::class, 'hello']);
+Route::get('/hello', [FileStorageController::class, 'hello']);
