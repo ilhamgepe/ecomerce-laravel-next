@@ -9,10 +9,11 @@ import {
   Text,
 } from "@mantine/core";
 import Poststable from "./components/Poststable";
+import Link from "next/link";
 
 const page = () => {
   return (
-    <Container>
+    <div>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Card.Section>
           <Group
@@ -30,7 +31,12 @@ const page = () => {
               All Post
             </Text>
             <Box>
-              <Button mr={"md"} color={"indigo"}>
+              <Button
+                href={"/dashboard/14-crud-operation/create-post"}
+                component={Link}
+                mr={"md"}
+                color={"indigo"}
+              >
                 Create
               </Button>
               <Button color="orange">Trashed</Button>
@@ -42,7 +48,7 @@ const page = () => {
           <Poststable />
         </Card.Section>
       </Card>
-    </Container>
+    </div>
   );
 };
 export default page;

@@ -10,6 +10,7 @@ import {
   Divider,
   FileInput,
   Group,
+  MultiSelect,
   Text,
   TextInput,
   Textarea,
@@ -19,11 +20,15 @@ import { IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconUpload } from "@tabler/icons-react";
 import { useForm } from "react-hook-form";
 import { CreatePost, CreatePostSchema } from "./zod/schema";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { axiosClient } from "@/libs/axios/axios";
+import axios from "axios";
 
 const page = () => {
   const [postImage, setPostImage] = useState<File | null>(null);
+  const [Categories, setCategories] = useState<string[]>([]);
+  const [categoryValue, setCategoryValue] = useState<string[]>([]);
+
   const {
     handleSubmit,
     register,
@@ -35,8 +40,31 @@ const page = () => {
       description: "",
     },
   });
+
+  useEffect(() => {
+    const source = axios.CancelToken.source();
+    const getCategories = async () => {
+      try {
+        const { data, status } = await axiosClient.get("/api/S16/categories", {
+          cancelToken: source.token,
+        });
+
+        const memek = data.data;
+        memek.map((item: any) => {
+          setCategories((prev) => [...prev, item.name]);
+        });
+      } catch (error) {
+        console.log({ error });
+      }
+    };
+    getCategories();
+
+    return () => {
+      source.cancel();
+    };
+  }, []);
   return (
-    <Container>
+    <Container fluid>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Card.Section>
           <Group
@@ -53,25 +81,24 @@ const page = () => {
             <Text size={"xl"} weight={"bold"}>
               Create Post
             </Text>
-            <Box>
-              <Button mr={"md"} color={"indigo"}>
-                Back
-              </Button>
-            </Box>
           </Group>
           <Divider />
         </Card.Section>
         <Card.Section p="xl">
           <form
             onSubmit={handleSubmit(async (event) => {
+              console.log("memek jalan");
+
               const formData = new FormData();
+              formData.append("category", JSON.stringify(categoryValue));
               formData.append("postImage", postImage!);
               formData.append("title", event.title);
               formData.append("description", event.description);
+
               try {
                 const { data, status } = await axiosClient({
                   method: "POST",
-                  url: "api/S16/create-post",
+                  url: "/api/S16/create-post",
                   data: formData,
                   headers: {
                     "Content-Type": "multipart/form-data",
@@ -98,6 +125,21 @@ const page = () => {
               mb="md"
               {...register("title")}
               error={errors.title?.message}
+            />
+            <MultiSelect
+              data={Categories}
+              limit={5}
+              searchable
+              placeholder="Pick category (optional)"
+              value={...categoryValue}
+              onChange={(e) => setCategoryValue([...e])}
+              creatable
+              getCreateLabel={(query) => `+ create ${query}`}
+              onCreate={(query) => {
+                setCategories((prev) => [...prev, query]);
+                return query;
+              }}
+              maxSelectedValues={3}
             />
             <Textarea
               label="Description"

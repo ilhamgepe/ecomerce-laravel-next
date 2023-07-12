@@ -7,6 +7,7 @@ import {
   Group,
   ScrollArea,
   Table,
+  Text,
   Tooltip,
 } from "@mantine/core";
 import { IconEdit, IconEye, IconTrash } from "@tabler/icons-react";
@@ -29,10 +30,18 @@ const Poststable = () => {
       <td>
         <Image src={row.image} alt="image" width={100} height={100} />
       </td>
-      <td>{row.title}</td>
-      <td>{row.description}</td>
-      <td>{row.category}</td>
-      <td>{row.publishDate}</td>
+      <td>
+        <Text>{row.title}</Text>
+      </td>
+      <td>
+        <Text>{row.description}</Text>
+      </td>
+      <td>
+        <Text>{row.category}</Text>
+      </td>
+      <td>
+        <Text sx={() => ({ whiteSpace: "nowrap" })}>{row.publishDate}</Text>
+      </td>
       <td>
         <Group>
           <Tooltip label="view">
