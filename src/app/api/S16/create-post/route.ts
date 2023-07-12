@@ -4,26 +4,16 @@ import { AxiosError } from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   const form = await request.formData();
 
   try {
-    const { data, status } = await axios({
-      url: "/S13/upload",
+    const { data, status } = await axios.post("/posts", form, {
       headers: {
-        // @ts-ignore
         Authorization: `Bearer ${session?.user.access_token}`,
         "Content-Type": "multipart/form-data",
       },
-      data: form,
-      method: "POST",
     });
 
     return NextResponse.json({

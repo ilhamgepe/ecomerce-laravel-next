@@ -54,8 +54,8 @@ const Navbar = ({ opened }: { opened: boolean }) => {
       <MantineNavbar.Section className={classes.footer}>
         <UserButton
           image="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80"
-          name="Ann Nullpointer"
-          email="anullpointer@yahoo.com"
+          name={session?.user.name!}
+          email={session?.user.email!}
         />
       </MantineNavbar.Section>
     </MantineNavbar>
@@ -107,6 +107,20 @@ const mockdata = [
     icon: 13,
     initiallyOpened: true,
     link: "/dashboard/13-file-storage",
+  },
+  {
+    label: "Fundamental: CRUD Operation",
+    icon: 14,
+    links: [
+      {
+        label: "Posts",
+        link: "/dashboard/14-crud-operation",
+      },
+      {
+        label: "Create Post",
+        link: "/dashboard/14-crud-operation/create-post",
+      },
+    ],
   },
   // {
   //   label: "Releases",

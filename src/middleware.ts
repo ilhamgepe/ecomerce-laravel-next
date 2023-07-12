@@ -9,6 +9,11 @@ function matchPathName(url: NextURL, pathname: string[]) {
 export async function middleware(request: NextRequest) {
   const session = await getToken({ req: request });
   const url = request.nextUrl.clone();
+  if (!session) {
+    return NextResponse.redirect(
+      new URL("http://localhost:3000/auth/signin", request.url)
+    );
+  }
   if (
     matchPathName(url, ["/dashboard", "/user", "/dashboard/13-file-storage"]) &&
     !session
@@ -24,3 +29,7 @@ export async function middleware(request: NextRequest) {
   }
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: ["/user", "/dashboard/:path*"],
+};
