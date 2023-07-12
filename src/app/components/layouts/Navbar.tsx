@@ -101,7 +101,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const mockdata = [
-  { label: "Dashboard", icon: "1", link: "/" },
+  { label: "Dashboard", icon: "1", link: "/dashboard" },
   {
     label: "Fundamental: File Storage",
     icon: 13,
