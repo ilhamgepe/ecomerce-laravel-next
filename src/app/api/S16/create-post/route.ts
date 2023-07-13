@@ -7,9 +7,10 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   const form = await request.formData();
+  console.log("memek");
 
   try {
-    const { data, status } = await axios.post("/posts", form, {
+    const { data, status } = await axios.post("/S16/posts", form, {
       headers: {
         Authorization: `Bearer ${session?.user.access_token}`,
         "Content-Type": "multipart/form-data",

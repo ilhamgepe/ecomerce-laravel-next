@@ -1,11 +1,11 @@
 "use client";
 
+import { axiosClient } from "@/libs/axios/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
   Button,
   Card,
-  Center,
   Container,
   Divider,
   FileInput,
@@ -16,18 +16,20 @@ import {
   Textarea,
   rem,
 } from "@mantine/core";
-import { IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconUpload } from "@tabler/icons-react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CreatePost, CreatePostSchema } from "./zod/schema";
-import { useEffect, useState } from "react";
-import { axiosClient } from "@/libs/axios/axios";
-import axios from "axios";
 
+interface ErrorObject {
+  [key: string]: string[];
+}
 const page = () => {
   const [postImage, setPostImage] = useState<File | null>(null);
   const [Categories, setCategories] = useState<string[]>([]);
   const [categoryValue, setCategoryValue] = useState<string[]>([]);
+  const [error, setError] = useState<ErrorObject | null>(null);
 
   const {
     handleSubmit,
@@ -53,8 +55,8 @@ const page = () => {
         memek.map((item: any) => {
           setCategories((prev) => [...prev, item.name]);
         });
-      } catch (error) {
-        console.log({ error });
+      } catch (error: any) {
+        setError(error.errors);
       }
     };
     getCategories();
@@ -106,11 +108,22 @@ const page = () => {
                   },
                 });
                 console.log({ data, status });
-              } catch (error) {
+              } catch (error: any) {
                 console.log({ error });
+                setError(error.response.data.error.errors);
               }
             })}
           >
+            {error &&
+              Object.keys(error).map((key) => (
+                <Box key={key}>
+                  {error[key].map((message) => (
+                    <Text key={message} color="red">
+                      {message}
+                    </Text>
+                  ))}
+                </Box>
+              ))}
             <FileInput
               label="Post image"
               placeholder="Your post image"
