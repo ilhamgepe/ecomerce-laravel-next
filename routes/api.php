@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\S13\FileStorageController;
+use App\Http\Controllers\api\S16\CategoryController;
 use App\Http\Controllers\api\S16\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,7 +26,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     // 16 CRUD OPERATIONS
     Route::prefix('S16')->group(function () {
-        Route::get('/posts/categories', [PostController::class, 'categories']);
+        Route::get('/posts/categories', [CategoryController::class, 'index']);
         Route::resource('posts', PostController::class);
     });
 });

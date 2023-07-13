@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\S16;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
@@ -15,21 +16,17 @@ class PostController extends Controller
      */
     public function index()
     {
+        $post = Post::with('categories')->paginate(10);
+
         return response()->json([
-            'data' => 'Hello World'
+            'data' => $post
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function categories()
-    {
-        $categories = Category::all();
-        return response()->json([
-            'data' => $categories,
-        ]);
-    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -44,7 +41,7 @@ class PostController extends Controller
             'postImage' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:5120'],
             'category' => ['required']
         ]);
-        $category = json_decode($request->get('category'));
+        $categories = json_decode($request->get('category'));
 
         $uploadedFile = $request->file('postImage');
         $filename = str_replace(' ', '_', $uploadedFile->getClientOriginalName());
@@ -52,8 +49,24 @@ class PostController extends Controller
 
         $imageUrl = Storage::url('images/postImage/' . $filename);
 
+        $post = Post::create([
+            'title' => $request->get('title'),
+            'description' => $request->get('description'),
+            'image' => $imageUrl,
+        ]);
+
+
+        foreach ($categories as $category) {
+            $categoryModel = Category::firstOrCreate(['name' => $category]);
+            $post->categories()->attach($categoryModel);
+        }
+
+
+
+        $postWithCategory = Post::with('categories')->find($post->id);
+
         return Response()->json([
-            'data' => $imageUrl
+            'data' => $postWithCategory
         ]);
     }
 
