@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { Post, RootPost } from "../types";
 import { useSession } from "next-auth/react";
 import { useParams, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 const Poststable = () => {
   const [posts, setPosts] = useState<Post[] | null>(null);
@@ -51,7 +52,10 @@ const Poststable = () => {
           <td>
             <Group>
               <Tooltip label="view">
-                <ActionIcon>
+                <ActionIcon
+                  href={"/dashboard/14-crud-operation/" + row.id}
+                  component={Link}
+                >
                   <IconEye />
                 </ActionIcon>
               </Tooltip>
