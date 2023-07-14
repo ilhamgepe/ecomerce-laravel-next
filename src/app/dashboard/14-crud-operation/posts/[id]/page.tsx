@@ -1,8 +1,8 @@
 import { axios } from "@/libs/axios/axios";
 import { authOptions } from "@/libs/nextauth/authoptions";
 import { getServerSession } from "next-auth";
-import { Post } from "../types";
-import ShowPost from "./components/ShowPost";
+import ShowPost from "../components/ShowPost";
+import { Post } from "../../types";
 
 async function getPost(id: string): Promise<Post | null> {
   const session = await getServerSession(authOptions);

@@ -114,7 +114,7 @@ const mockdata = [
     links: [
       {
         label: "Posts",
-        link: "/dashboard/14-crud-operation",
+        link: "/dashboard/14-crud-operation/posts",
       },
       {
         label: "Create Post",
