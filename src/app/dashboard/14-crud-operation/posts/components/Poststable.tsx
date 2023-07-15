@@ -60,7 +60,12 @@ const Poststable = ({ posts, data }: PoststableProps) => {
                 </ActionIcon>
               </Tooltip>
               <Tooltip label="edit">
-                <ActionIcon>
+                <ActionIcon
+                  href={
+                    "/dashboard/14-crud-operation/posts/" + row.id + "/edit"
+                  }
+                  component={Link}
+                >
                   <IconEdit />
                 </ActionIcon>
               </Tooltip>

@@ -25,7 +25,21 @@ export interface Post {
   description: string;
   created_at: string;
   updated_at: string;
-  categories: any[];
+  categories: Category[];
+}
+export interface Category {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  pivot: Pivot;
+}
+
+export interface Pivot {
+  post_id: number;
+  category_id: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Link {
