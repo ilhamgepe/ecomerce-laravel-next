@@ -5,9 +5,11 @@ namespace App\Http\Controllers\api\S16;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PostController extends Controller
 {
@@ -16,7 +18,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $post = Post::with('categories')->paginate(10);
+        $post = Post::with('categories')->paginate(1);
 
         return response()->json([
             'data' => $post
@@ -75,7 +77,15 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        //
+
+        try {
+            $post = Post::with('categories')->findOrFail($id);
+        } catch (ModelNotFoundException $error) {
+            return Response(["error" => "Post with id {$id} not found"], Response::HTTP_NOT_FOUND);
+        }
+        return Response()->json([
+            'data' => $post
+        ]);
     }
 
     /**
