@@ -7,6 +7,7 @@ import {
   Container,
   Divider,
   Group,
+  Modal,
   Pagination,
   ScrollArea,
   Table,
@@ -16,17 +17,53 @@ import {
 import { IconEdit, IconEye, IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { Data, Post } from "../../types";
-import { useSearchParams } from "next/navigation";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { notifications } from "@mantine/notifications";
 
 interface PoststableProps {
   posts: Post[];
   data: Data;
 }
 const Poststable = ({ posts, data }: PoststableProps) => {
+  const router = useRouter();
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page")!, 10);
+  const [modalDeleteOpened, setmodalDeleteOpened] = useState<boolean>(false);
+  const [selectedPost, setSelectedPost] = useState<number | null>(null);
 
+  console.log(selectedPost);
+
+  const handleDelete = async (id: number) => {
+    try {
+      const { data, status } = await axios.delete(
+        `http://ecomerce_fundamental.test/api/S16/posts/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.user.access_token}`,
+          },
+        }
+      );
+      if (status === 204) {
+        setmodalDeleteOpened(false);
+        setSelectedPost(null);
+        router.replace("/dashboard/14-crud-operation/posts");
+      }
+    } catch (error: any) {
+      console.log({ error });
+
+      notifications.show({
+        title: "Error",
+        message: error.response.data.error || "Failed to delete post",
+        color: "red",
+        autoClose: 5000,
+      });
+    }
+  };
   const rows = posts
     ? posts.map((row, index) => (
         <tr key={index}>
@@ -70,7 +107,12 @@ const Poststable = ({ posts, data }: PoststableProps) => {
                 </ActionIcon>
               </Tooltip>
               <Tooltip label="delete">
-                <ActionIcon>
+                <ActionIcon
+                  onClick={() => {
+                    setmodalDeleteOpened(true);
+                    setSelectedPost(row.id);
+                  }}
+                >
                   <IconTrash />
                 </ActionIcon>
               </Tooltip>
@@ -92,81 +134,121 @@ const Poststable = ({ posts, data }: PoststableProps) => {
   );
 
   return (
-    <Container fluid>
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Card.Section>
-          <Group
-            position="apart"
-            py={"md"}
-            px={"xl"}
-            sx={(theme) => ({
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[8]
-                  : theme.colors.gray[0],
-            })}
+    <>
+      <Modal
+        opened={modalDeleteOpened}
+        onClose={() => {
+          setmodalDeleteOpened(false);
+          setSelectedPost(null);
+        }}
+        title="Delete Post"
+        centered
+        withCloseButton={false}
+      >
+        <Text>Are you sure you want to delete this post?</Text>
+        <Group
+          sx={(theme) => ({
+            display: "flex",
+            width: 300,
+            justifyContent: "space-between",
+            alignItems: "center",
+            margin: "auto",
+            marginTop: theme.spacing.md,
+          })}
+        >
+          <Button
+            variant="outline"
+            color="red"
+            onClick={() => (selectedPost ? handleDelete(selectedPost) : null)}
           >
-            <Text size={"xl"} weight={"bold"}>
-              All Post
-            </Text>
-            <Box>
-              <Button
-                href={"/dashboard/14-crud-operation/create-post"}
-                component={Link}
-                mr={"md"}
-                color={"indigo"}
-              >
-                Create
-              </Button>
-              <Button color="orange">Trashed</Button>
-            </Box>
-          </Group>
-          <Divider />
-        </Card.Section>
-        <Card.Section>
-          {rows ? (
-            <ScrollArea>
-              <Table miw={800} verticalSpacing="sm" highlightOnHover>
-                <thead>{ths}</thead>
-                <tbody>{rows}</tbody>
-              </Table>
-            </ScrollArea>
-          ) : (
-            <Text size={"xl"} align="center" weight={"bold"} my={"xl"}>
-              Post not available
-            </Text>
-          )}
-          <Pagination.Root
-            total={data.last_page}
-            getItemProps={(page) => ({
-              component: Link,
-              href: `/dashboard/14-crud-operation/posts?page=${page}`,
-            })}
-            value={data.current_page}
+            Delete
+          </Button>
+          <Button
+            onClick={() => {
+              setmodalDeleteOpened(false);
+              setSelectedPost(null);
+            }}
           >
-            <Group spacing={7} position="center" my="xl">
-              <Pagination.Previous
-                component={Link}
-                href={
-                  page === 1
-                    ? "#"
-                    : `/dashboard/14-crud-operation/posts?page=${page - 1}`
-                }
-              />
-              <Pagination.Items />
-              <Pagination.Next
-                component={Link}
-                href={
-                  page === data.last_page
-                    ? "#"
-                    : `/dashboard/14-crud-operation/posts?page=${page + 1}`
-                }
-              />
+            Cancel
+          </Button>
+        </Group>
+      </Modal>
+      <Container fluid>
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
+          <Card.Section>
+            <Group
+              position="apart"
+              py={"md"}
+              px={"xl"}
+              sx={(theme) => ({
+                backgroundColor:
+                  theme.colorScheme === "dark"
+                    ? theme.colors.dark[8]
+                    : theme.colors.gray[0],
+              })}
+            >
+              <Text size={"xl"} weight={"bold"}>
+                All Post
+              </Text>
+              <Box>
+                <Button
+                  href={"/dashboard/14-crud-operation/create-post"}
+                  component={Link}
+                  mr={"md"}
+                  color={"indigo"}
+                >
+                  Create
+                </Button>
+                <Button color="orange">Trashed</Button>
+              </Box>
             </Group>
-          </Pagination.Root>
-        </Card.Section>
-      </Card>
-    </Container>
+            <Divider />
+          </Card.Section>
+          <Card.Section>
+            {rows ? (
+              <ScrollArea>
+                <Table miw={800} verticalSpacing="sm" highlightOnHover>
+                  <thead>{ths}</thead>
+                  <tbody>{rows}</tbody>
+                </Table>
+              </ScrollArea>
+            ) : (
+              <Text size={"xl"} align="center" weight={"bold"} my={"xl"}>
+                Post not available
+              </Text>
+            )}
+            <Pagination.Root
+              total={data.last_page}
+              getItemProps={(page) => ({
+                component: Link,
+                href: `/dashboard/14-crud-operation/posts?page=${page}`,
+              })}
+              value={data.current_page}
+            >
+              <Group spacing={7} position="center" my="xl">
+                <Pagination.Previous
+                  component={Link}
+                  href={
+                    page === 1
+                      ? "#"
+                      : `/dashboard/14-crud-operation/posts?page=${page - 1}`
+                  }
+                />
+                <Pagination.Items />
+                <Pagination.Next
+                  component={Link}
+                  href={
+                    page === data.last_page
+                      ? "#"
+                      : `/dashboard/14-crud-operation/posts?page=${page + 1}`
+                  }
+                />
+              </Group>
+            </Pagination.Root>
+          </Card.Section>
+        </Card>
+      </Container>
+    </>
   );
 };
 export default Poststable;
