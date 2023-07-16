@@ -22,7 +22,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $post = Post::with('categories')->paginate(1);
+        $post = Post::with('categories')->latest()->paginate(1);
 
         return response()->json([
             'data' => $post
