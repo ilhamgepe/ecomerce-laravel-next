@@ -26,10 +26,12 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     // 16 CRUD OPERATIONS
     Route::prefix('S16')->group(function () {
-        Route::get('/posts/categories', [CategoryController::class, 'index']);
-        Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts');
+        Route::get('/posts/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/posts/trash', [PostController::class, 'trashed'])->name('posts.trash');
+        Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
         Route::post('/posts/{id}', [PostController::class, 'update'])->name('post.edit');
-        Route::get('/posts', [PostController::class, 'index'])->name('posts');
+        Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+        Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
         Route::post('/posts', [PostController::class, 'store'])->name('posts.create');
     });
 });

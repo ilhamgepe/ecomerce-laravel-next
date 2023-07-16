@@ -63,6 +63,7 @@ class PostController extends Controller
         $post = Post::create([
             'title' => $request->get('title'),
             'description' => $request->get('description'),
+            // kita isi memek dulu, baru kita replace dengan gamabr yg sebenarnya
             'image' => 'memek',
         ]);
 
@@ -180,6 +181,20 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $post = Post::findOrFail($id);
+            $post->delete();
+            return Response([], Response::HTTP_NO_CONTENT);
+        } catch (ModelNotFoundException $error) {
+            return Response(["error" => "Post with id {$id} not found"], Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function trashed()
+    {
+        $posts = Post::onlyTrashed()->latest()->paginate(1);
+        return Response([
+            'data' => $posts
+        ], Response::HTTP_OK);
     }
 }
