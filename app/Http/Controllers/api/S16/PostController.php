@@ -60,16 +60,10 @@ class PostController extends Controller
         ]);
         $categories = json_decode($request->get('category'));
 
-        $uploadedFile = $request->file('postImage');
-        $filename = str_replace(' ', '_', $uploadedFile->getClientOriginalName());
-        $uploadedFile->storeAs('images/postImage', $filename);
-
-        $imageUrl = Storage::url('images/postImage/' . $filename);
-
         $post = Post::create([
             'title' => $request->get('title'),
             'description' => $request->get('description'),
-            'image' => $imageUrl,
+            'image' => 'memek',
         ]);
 
 
@@ -77,6 +71,15 @@ class PostController extends Controller
             $categoryModel = Category::firstOrCreate(['name' => $category]);
             $post->categories()->attach($categoryModel);
         }
+        // image handler
+        $uploadedFile = $request->file('postImage');
+        $filename = str_replace(' ', '_', $uploadedFile->getClientOriginalName());
+        $uploadedFile->storeAs('images/postImage', $post->id . '_' .  $filename);
+
+        $imageUrl = Storage::url('images/postImage/' . $post->id . '_' . $filename);
+        $post->image = $imageUrl;
+        $post->save();
+
 
 
 
@@ -135,38 +138,41 @@ class PostController extends Controller
         ]);
 
 
-        $post = Post::findOrFail($id);
-        $post->title = $request->get('title');
-        $post->description = $request->get('description');
-        if ($request->hasFile('postImage')) {
-            // hapus file nya dulu
-            $fileUrl = $post->image;
-            $filenameOld = basename($fileUrl);
-            Storage::delete('/images/postImage/' . $filenameOld);
+        try {
+            $post = Post::findOrFail($id);
+            $post->title = $request->get('title');
+            $post->description = $request->get('description');
+            if ($request->hasFile('postImage')) {
+                // hapus file nya dulu
+                $fileUrl = $post->image;
+                $filenameOld = basename($fileUrl);
+                Storage::delete('/images/postImage/' . $filenameOld);
 
-            // baru kita ganti
-            $file = $request->file('postImage');
-            $filename = str_replace(' ', '_', $file->getClientOriginalName());
-            $file->storeAs('images/postImage', $filename);
-            $post->image = Storage::url('images/postImage/' . $filename);
+                // baru kita ganti
+                $file = $request->file('postImage');
+                $filename = str_replace(' ', '_', $file->getClientOriginalName());
+                $file->storeAs('images/postImage',  $post->id . '_' . $filename);
+                $post->image = Storage::url('images/postImage/' . $post->id . '_' . $filename);
+            }
+            $post->save();
+
+            $categories = json_decode($request->get('category'));
+            foreach ($categories as $category) {
+                Category::firstOrCreate(['name' => $category]);
+            }
+
+            // hapus categy yang sebelumnya dan ganti dengan yang baru
+            $post->categories()->detach();
+            foreach ($categories as $category) {
+                $categoryModel = Category::firstOrCreate(['name' => $category]);
+                $post->categories()->attach($categoryModel);
+            }
+            return Response([
+                'post' => Post::with('categories')->find($id)
+            ]);
+        } catch (ModelNotFoundException $error) {
+            return Response(["error" => "Post with id {$id} not found"], Response::HTTP_NOT_FOUND);
         }
-        $post->save();
-
-        $categories = json_decode($request->get('category'));
-        foreach ($categories as $category) {
-            Category::firstOrCreate(['name' => $category]);
-        }
-
-        // hapus categy yang sebelumnya dan ganti dengan yang baru
-        $post->categories()->detach();
-        foreach ($categories as $category) {
-            $categoryModel = Category::firstOrCreate(['name' => $category]);
-            $post->categories()->attach($categoryModel);
-        }
-
-        return Response([
-            'post' => Post::with('categories')->find($id)
-        ]);
     }
 
     /**
