@@ -120,6 +120,10 @@ const mockdata = [
         label: "Create Post",
         link: "/dashboard/14-crud-operation/create-post",
       },
+      {
+        label: "Trahsed Posts",
+        link: "/dashboard/14-crud-operation/posts/trashed",
+      },
     ],
   },
   // {

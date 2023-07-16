@@ -14,7 +14,7 @@ import {
   Text,
   Tooltip,
 } from "@mantine/core";
-import { IconEdit, IconEye, IconTrash } from "@tabler/icons-react";
+import { IconEdit, IconEye, IconRefresh, IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -24,46 +24,23 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { notifications } from "@mantine/notifications";
 
-interface PoststableProps {
+interface TrashedPostProps {
   posts: Post[];
   data: Data;
 }
-const Poststable = ({ posts, data }: PoststableProps) => {
+const TrashedPost = ({ posts, data }: TrashedPostProps) => {
   const router = useRouter();
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const page = searchParams.get("page")
     ? parseInt(searchParams.get("page")!, 10)
     : 1;
-  const [modalDeleteOpened, setmodalDeleteOpened] = useState<boolean>(false);
-  const [selectedPost, setSelectedPost] = useState<number | null>(null);
 
-  const handleDelete = async (id: number) => {
-    try {
-      const { data, status } = await axios.delete(
-        `http://ecomerce_fundamental.test/api/S16/posts/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session?.user.access_token}`,
-          },
-        }
-      );
-      if (status === 204) {
-        setmodalDeleteOpened(false);
-        setSelectedPost(null);
-        router.replace("/dashboard/14-crud-operation/posts");
-      }
-    } catch (error: any) {
-      console.log({ error });
+  // const [modalDeleteOpened, setmodalDeleteOpened] = useState<boolean>(false);
+  // const [selectedPost, setSelectedPost] = useState<number | null>(null);
 
-      notifications.show({
-        title: "Error",
-        message: error.response.data.error || "Failed to delete post",
-        color: "red",
-        autoClose: 5000,
-      });
-    }
-  };
+  // console.log(selectedPost);
+
   const rows = posts
     ? posts.map((row, index) => (
         <tr key={index}>
@@ -88,30 +65,22 @@ const Poststable = ({ posts, data }: PoststableProps) => {
           </td>
           <td>
             <Group>
-              <Tooltip label="view">
+              <Tooltip label="Restore">
                 <ActionIcon
-                  href={"/dashboard/14-crud-operation/posts/" + row.id}
-                  component={Link}
+                // href={
+                //   "/dashboard/14-crud-operation/posts/" + row.id + "/edit"
+                // }
+                // component={Link}
                 >
-                  <IconEye />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label="edit">
-                <ActionIcon
-                  href={
-                    "/dashboard/14-crud-operation/posts/" + row.id + "/edit"
-                  }
-                  component={Link}
-                >
-                  <IconEdit />
+                  <IconRefresh />
                 </ActionIcon>
               </Tooltip>
               <Tooltip label="delete">
                 <ActionIcon
-                  onClick={() => {
-                    setmodalDeleteOpened(true);
-                    setSelectedPost(row.id);
-                  }}
+                // onClick={() => {
+                //   setmodalDeleteOpened(true);
+                //   setSelectedPost(row.id);
+                // }}
                 >
                   <IconTrash />
                 </ActionIcon>
@@ -135,7 +104,7 @@ const Poststable = ({ posts, data }: PoststableProps) => {
 
   return (
     <>
-      <Modal
+      {/* <Modal
         opened={modalDeleteOpened}
         onClose={() => {
           setmodalDeleteOpened(false);
@@ -172,7 +141,7 @@ const Poststable = ({ posts, data }: PoststableProps) => {
             Cancel
           </Button>
         </Group>
-      </Modal>
+      </Modal> */}
       <Container fluid>
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Card.Section>
@@ -183,28 +152,21 @@ const Poststable = ({ posts, data }: PoststableProps) => {
               sx={(theme) => ({
                 backgroundColor:
                   theme.colorScheme === "dark"
-                    ? theme.colors.dark[8]
-                    : theme.colors.gray[0],
+                    ? theme.colors.yellow[8]
+                    : theme.colors.yellow[7],
               })}
             >
-              <Text size={"xl"} weight={"bold"}>
-                All Post
+              <Text size={"xl"} weight={"bold"} color="dark">
+                Trashed Posts
               </Text>
               <Box>
                 <Button
-                  href={"/dashboard/14-crud-operation/create-post"}
+                  href={"/dashboard/14-crud-operation/posts"}
                   component={Link}
                   mr={"md"}
                   color={"indigo"}
                 >
-                  Create
-                </Button>
-                <Button
-                  color="orange"
-                  href={"/dashboard/14-crud-operation/posts/trashed"}
-                  component={Link}
-                >
-                  Trashed
+                  Posts
                 </Button>
               </Box>
             </Group>
@@ -227,7 +189,7 @@ const Poststable = ({ posts, data }: PoststableProps) => {
               total={data.last_page}
               getItemProps={(page) => ({
                 component: Link,
-                href: `/dashboard/14-crud-operation/posts?page=${page}`,
+                href: `/dashboard/14-crud-operation/posts/trashed?page=${page}`,
               })}
               value={data.current_page}
             >
@@ -237,7 +199,9 @@ const Poststable = ({ posts, data }: PoststableProps) => {
                   href={
                     page === 1
                       ? "#"
-                      : `/dashboard/14-crud-operation/posts?page=${page - 1}`
+                      : `/dashboard/14-crud-operation/posts/trashed?page=${
+                          page - 1
+                        }`
                   }
                 />
                 <Pagination.Items />
@@ -246,7 +210,9 @@ const Poststable = ({ posts, data }: PoststableProps) => {
                   href={
                     page === data.last_page
                       ? "#"
-                      : `/dashboard/14-crud-operation/posts?page=${page + 1}`
+                      : `/dashboard/14-crud-operation/posts/trashed?page=${
+                          page + 1
+                        }`
                   }
                 />
               </Group>
@@ -257,4 +223,4 @@ const Poststable = ({ posts, data }: PoststableProps) => {
     </>
   );
 };
-export default Poststable;
+export default TrashedPost;

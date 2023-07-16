@@ -3,7 +3,6 @@ import { authOptions } from "@/libs/nextauth/authoptions";
 import { getServerSession } from "next-auth";
 import { Data } from "../types";
 import Poststable from "./components/Poststable";
-import PostPagination from "./components/PostPagination";
 
 async function getAllPosts(page?: string): Promise<Data | null> {
   const session = await getServerSession(authOptions);

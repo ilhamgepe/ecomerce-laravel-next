@@ -16,7 +16,6 @@ const page = () => {
           Accept: "application/json",
           Authorization: `Bearer ${session?.user.access_token}`,
         },
-        withCredentials: true,
       }
     );
     console.log({ data, status });
