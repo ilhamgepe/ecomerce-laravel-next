@@ -21,11 +21,15 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CreatePost, CreatePostSchema } from "./zod/schema";
+import { useRouter } from "next/navigation";
+import { Post, RootPost } from "../types";
 
 interface ErrorObject {
   [key: string]: string[];
 }
 const page = () => {
+  const route = useRouter();
+
   const [postImage, setPostImage] = useState<File | null>(null);
   const [Categories, setCategories] = useState<string[]>([]);
   const [categoryValue, setCategoryValue] = useState<string[]>([]);
@@ -98,16 +102,23 @@ const page = () => {
               formData.append("description", event.description);
 
               try {
-                const { data, status } = await axiosClient({
-                  method: "POST",
-                  url: "/api/S16/create-post",
-                  data: formData,
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                    Accept: "application/json",
-                  },
-                });
-                console.log({ data, status });
+                const {
+                  data,
+                  status,
+                }: { data: { data: { data: Post } }; status: number } =
+                  await axiosClient({
+                    method: "POST",
+                    url: "/api/S16/create-post",
+                    data: formData,
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                      Accept: "application/json",
+                    },
+                  });
+
+                route.replace(
+                  `/dashboard/14-crud-operation/posts/${data.data.data.id}`
+                );
               } catch (error: any) {
                 console.log({ error });
                 setError(error.response.data.error.errors);
