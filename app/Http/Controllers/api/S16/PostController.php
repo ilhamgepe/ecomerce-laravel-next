@@ -197,4 +197,17 @@ class PostController extends Controller
             'data' => $posts
         ], Response::HTTP_OK);
     }
+    public function showTrashed($id)
+    {
+        try {
+            $post = Post::with('categories')->onlyTrashed()->findOrFail($id);
+            return Response([
+                'data' => $post
+            ], Response::HTTP_OK);
+        } catch (ModelNotFoundException $th) {
+            return Response([
+                'error' => "Post with id {$id} not found",
+            ], Response::HTTP_NOT_FOUND);
+        }
+    }
 }
