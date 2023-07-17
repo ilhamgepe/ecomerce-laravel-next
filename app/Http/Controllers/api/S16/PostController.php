@@ -22,7 +22,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $post = Post::with('categories')->latest()->paginate(1);
+        $post = Post::with('categories')->latest()->paginate(10);
 
         return response()->json([
             'data' => $post
@@ -192,7 +192,7 @@ class PostController extends Controller
 
     public function trashed()
     {
-        $posts = Post::onlyTrashed()->latest()->paginate(1);
+        $posts = Post::onlyTrashed()->latest()->paginate(10);
         return Response([
             'data' => $posts
         ], Response::HTTP_OK);
@@ -217,6 +217,30 @@ class PostController extends Controller
             $post = Post::onlyTrashed()->findOrFail($id)->restore();
             return Response([
                 'data' => "Post with id {$id} restored"
+            ], Response::HTTP_OK);
+        } catch (ModelNotFoundException $th) {
+            return Response([
+                'error' => "Post with id {$id} not found",
+            ], Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function forceDelete(string $id)
+    {
+        try {
+            // ambil postnya
+            $post = Post::onlyTrashed()->findOrFail($id);
+            // hapus categorynay di pivot table
+            $post->categories()->detach();
+            // hapus image yang ada di storage biar ga sampah
+            $fileUrl = $post->image;
+            $filenameOld = basename($fileUrl);
+            Storage::delete('/images/postImage/' . $filenameOld);
+
+            // delete permanent datanya
+            $post->forceDelete();
+            return Response([
+                'data' => "Post with id {$id} deleted permanently",
             ], Response::HTTP_OK);
         } catch (ModelNotFoundException $th) {
             return Response([

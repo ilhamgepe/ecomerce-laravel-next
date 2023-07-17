@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/posts/trash', [PostController::class, 'trashed'])->name('posts.trash');
         Route::get('/posts/trash/{id}/restore', [PostController::class, 'restore'])->name('posts.trash.restore');
         Route::get('/posts/trash/{id}', [PostController::class, 'showTrashed'])->name('posts.trash.show');
+        Route::delete('/posts/trash/{id}', [PostController::class, 'forceDelete'])->name('posts.trash.forceDelete');
 
         Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
         Route::post('/posts/{id}', [PostController::class, 'update'])->name('post.edit');
