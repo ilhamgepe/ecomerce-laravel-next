@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('S16')->group(function () {
         Route::get('/posts/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::get('/posts/trash', [PostController::class, 'trashed'])->name('posts.trash');
+        Route::get('/posts/trash/{id}/restore', [PostController::class, 'restore'])->name('posts.trash.restore');
         Route::get('/posts/trash/{id}', [PostController::class, 'showTrashed'])->name('posts.trash.show');
 
         Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');

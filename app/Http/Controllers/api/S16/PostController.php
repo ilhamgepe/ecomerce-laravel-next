@@ -210,4 +210,18 @@ class PostController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
     }
+
+    public function restore(string $id)
+    {
+        try {
+            $post = Post::onlyTrashed()->findOrFail($id)->restore();
+            return Response([
+                'data' => "Post with id {$id} restored"
+            ], Response::HTTP_OK);
+        } catch (ModelNotFoundException $th) {
+            return Response([
+                'error' => "Post with id {$id} not found",
+            ], Response::HTTP_NOT_FOUND);
+        }
+    }
 }
