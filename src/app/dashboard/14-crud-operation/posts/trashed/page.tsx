@@ -1,10 +1,7 @@
-import { axios } from "@/libs/axios/axios";
-import { authOptions } from "@/libs/nextauth/authoptions";
-import { getServerSession } from "next-auth";
-import { Data } from "../../types";
-import TrashedPost from "./TrashedPost";
+import chalk from "chalk";
 import { Metadata } from "next";
 import { getTrashedPosts } from "../server";
+import TrashedPost from "./TrashedPost";
 
 export const metadata: Metadata = {
   title: "Trashed Post",
@@ -17,10 +14,9 @@ const TrashedPage = async ({
   searchParams: { page: string };
 }) => {
   const posts = await getTrashedPosts(searchParams.page);
-  console.log({ posts });
 
-  if (posts === null) {
-    return <div>Post Not Found!</div>;
+  if (posts === null || posts.data.length === 0) {
+    return <div>Trashed Post Not Found!</div>;
   }
   return (
     <div>

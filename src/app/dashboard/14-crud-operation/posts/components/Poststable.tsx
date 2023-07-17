@@ -51,7 +51,13 @@ const Poststable = ({ posts, data }: PoststableProps) => {
       if (status === 204) {
         setmodalDeleteOpened(false);
         setSelectedPost(null);
-        router.replace("/dashboard/14-crud-operation/posts");
+        notifications.show({
+          title: "Success",
+          message: "Post deleted successfully",
+          color: "indigo",
+          autoClose: 5000,
+        });
+        router.refresh();
       }
     } catch (error: any) {
       console.log({ error });

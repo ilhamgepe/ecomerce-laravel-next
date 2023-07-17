@@ -4,11 +4,11 @@ import { AxiosError } from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);

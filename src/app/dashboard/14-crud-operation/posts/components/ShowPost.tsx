@@ -25,7 +25,11 @@ const ShowPost = ({ post }: { post: Post }) => {
             <Text size={"xl"} weight={"bold"}>
               {post.title}
             </Text>
-            <Button onClick={() => route.back()}>back</Button>
+            <Button
+              onClick={() => route.push("/dashboard/14-crud-operation/posts")}
+            >
+              Posts
+            </Button>
           </Group>
         </Card.Section>
         <Container fluid>

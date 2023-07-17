@@ -41,6 +41,37 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
 
   // console.log(selectedPost);
 
+  const handleRestore = async (id: number) => {
+    try {
+      const { data, status } = await axios.get(
+        `http://ecomerce_fundamental.test/api/S16/posts/trash/${id}/restore`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.user.access_token}`,
+          },
+        }
+      );
+      if (status === 200) {
+        notifications.show({
+          title: "Success",
+          message: "Post restored successfully",
+          color: "green",
+          autoClose: 5000,
+        });
+        router.refresh();
+        router.replace(`/dashboard/14-crud-operation/posts/${id}`);
+      }
+    } catch (error: any) {
+      console.log({ error });
+      notifications.show({
+        title: "Failed",
+        message: "Failed to restore post",
+        color: "red",
+        autoClose: 5000,
+      });
+    }
+  };
+
   const rows = posts
     ? posts.map((row, index) => (
         <tr key={index}>
@@ -65,7 +96,7 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
           </td>
           <td>
             <Group>
-              <Tooltip label="Restore">
+              <Tooltip label="view">
                 <ActionIcon
                   href={"/dashboard/14-crud-operation/posts/trashed/" + row.id}
                   component={Link}
@@ -74,12 +105,7 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
                 </ActionIcon>
               </Tooltip>
               <Tooltip label="Restore">
-                <ActionIcon
-                // href={
-                //   "/dashboard/14-crud-operation/posts/" + row.id + "/edit"
-                // }
-                // component={Link}
-                >
+                <ActionIcon onClick={() => handleRestore(row.id)}>
                   <IconRefresh />
                 </ActionIcon>
               </Tooltip>

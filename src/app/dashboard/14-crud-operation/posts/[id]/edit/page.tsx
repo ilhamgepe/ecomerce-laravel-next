@@ -4,13 +4,10 @@ import { getPostWithId } from "../../server";
 
 type Props = {
   params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent?: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props) {
   const post = await getPostWithId(params.id);
   return {
     title: post ? `Edit: ${post?.title}` : "Post Not Found!",

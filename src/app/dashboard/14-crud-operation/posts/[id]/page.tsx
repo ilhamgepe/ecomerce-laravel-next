@@ -1,23 +1,20 @@
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 import ShowPost from "../components/ShowPost";
 import { getPostWithId } from "../server";
 
 type Props = {
   params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent?: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props) {
   const id = params.id;
   const post = await getPostWithId(id);
   return {
     title: post ? post?.title : "Post Not Found!",
   };
 }
-const page = async ({ params, searchParams }: Props) => {
+const page = async ({ params }: Props) => {
   const post = await getPostWithId(params.id);
 
   if (post === null) {
