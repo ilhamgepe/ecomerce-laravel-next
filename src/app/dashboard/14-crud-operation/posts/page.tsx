@@ -29,6 +29,7 @@ const PostPage = async ({
   searchParams: { page: string };
 }) => {
   const posts = await getAllPosts(searchParams.page);
+
   if (posts === null) {
     return <div>Post Not Found!</div>;
   }

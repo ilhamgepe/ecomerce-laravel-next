@@ -34,6 +34,7 @@ const page = () => {
   const [Categories, setCategories] = useState<string[]>([]);
   const [categoryValue, setCategoryValue] = useState<string[]>([]);
   const [error, setError] = useState<ErrorObject | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const {
     handleSubmit,
@@ -93,6 +94,7 @@ const page = () => {
         <Card.Section p="xl">
           <form
             onSubmit={handleSubmit(async (event) => {
+              setLoading(true);
               console.log("memek jalan");
 
               const formData = new FormData();
@@ -115,11 +117,11 @@ const page = () => {
                       Accept: "application/json",
                     },
                   });
-
                 route.replace(
                   `/dashboard/14-crud-operation/posts/${data.data.data.id}`
                 );
               } catch (error: any) {
+                setLoading(false);
                 console.log({ error });
                 setError(error.response.data.error.errors);
               }
@@ -173,7 +175,7 @@ const page = () => {
               {...register("description")}
               error={errors.description?.message}
             />
-            <Button type="submit" fullWidth>
+            <Button type="submit" fullWidth loading={loading}>
               Submit
             </Button>
           </form>

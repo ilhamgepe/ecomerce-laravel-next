@@ -36,10 +36,10 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
     ? parseInt(searchParams.get("page")!, 10)
     : 1;
 
-  // const [modalDeleteOpened, setmodalDeleteOpened] = useState<boolean>(false);
-  // const [selectedPost, setSelectedPost] = useState<number | null>(null);
+  const [modalDeleteOpened, setmodalDeleteOpened] = useState<boolean>(false);
+  const [selectedPost, setSelectedPost] = useState<number | null>(null);
 
-  // console.log(selectedPost);
+  console.log(selectedPost);
 
   const handleRestore = async (id: number) => {
     try {
@@ -51,21 +51,50 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
           },
         }
       );
-      if (status === 200) {
-        notifications.show({
-          title: "Success",
-          message: "Post restored successfully",
-          color: "green",
-          autoClose: 5000,
-        });
-        router.refresh();
-        router.replace(`/dashboard/14-crud-operation/posts/${id}`);
-      }
+      notifications.show({
+        title: "Success",
+        message: "Post restored successfully",
+        color: "green",
+        autoClose: 5000,
+      });
+      router.refresh();
+      router.replace(`/dashboard/14-crud-operation/posts/${id}`);
     } catch (error: any) {
       console.log({ error });
       notifications.show({
         title: "Failed",
         message: "Failed to restore post",
+        color: "red",
+        autoClose: 5000,
+      });
+    }
+  };
+
+  const handlePermanentDelete = async (id: number) => {
+    try {
+      const { data, status } = await axios.delete(
+        `http://ecomerce_fundamental.test/api/S16/posts/trash/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.user.access_token}`,
+          },
+        }
+      );
+      setmodalDeleteOpened(false);
+      setSelectedPost(null);
+      notifications.show({
+        title: "Success",
+        message: "Post deleted successfully",
+        color: "indigo",
+        autoClose: 5000,
+      });
+      router.refresh();
+    } catch (error: any) {
+      console.log({ error });
+      setSelectedPost(null);
+      notifications.show({
+        title: "Error",
+        message: error.response.data.error || "Failed to delete post",
         color: "red",
         autoClose: 5000,
       });
@@ -111,10 +140,10 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
               </Tooltip>
               <Tooltip label="delete">
                 <ActionIcon
-                // onClick={() => {
-                //   setmodalDeleteOpened(true);
-                //   setSelectedPost(row.id);
-                // }}
+                  onClick={() => {
+                    setmodalDeleteOpened(true);
+                    setSelectedPost(row.id);
+                  }}
                 >
                   <IconTrash />
                 </ActionIcon>
@@ -138,7 +167,7 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
 
   return (
     <>
-      {/* <Modal
+      <Modal
         opened={modalDeleteOpened}
         onClose={() => {
           setmodalDeleteOpened(false);
@@ -162,7 +191,9 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
           <Button
             variant="outline"
             color="red"
-            onClick={() => (selectedPost ? handleDelete(selectedPost) : null)}
+            onClick={() =>
+              selectedPost ? handlePermanentDelete(selectedPost) : null
+            }
           >
             Delete
           </Button>
@@ -175,7 +206,7 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
             Cancel
           </Button>
         </Group>
-      </Modal> */}
+      </Modal>
       <Container fluid>
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Card.Section>

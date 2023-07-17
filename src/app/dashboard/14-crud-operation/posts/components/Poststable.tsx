@@ -17,7 +17,7 @@ import {
 import { IconEdit, IconEye, IconTrash } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Data, Post } from "../../types";
 import axios from "axios";
@@ -30,6 +30,7 @@ interface PoststableProps {
 }
 const Poststable = ({ posts, data }: PoststableProps) => {
   const router = useRouter();
+
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const page = searchParams.get("page")
@@ -48,19 +49,18 @@ const Poststable = ({ posts, data }: PoststableProps) => {
           },
         }
       );
-      if (status === 204) {
-        setmodalDeleteOpened(false);
-        setSelectedPost(null);
-        notifications.show({
-          title: "Success",
-          message: "Post deleted successfully",
-          color: "indigo",
-          autoClose: 5000,
-        });
-        router.refresh();
-      }
+      setmodalDeleteOpened(false);
+      setSelectedPost(null);
+      notifications.show({
+        title: "Success",
+        message: "Post deleted successfully",
+        color: "indigo",
+        autoClose: 5000,
+      });
+      router.refresh();
     } catch (error: any) {
       console.log({ error });
+      setSelectedPost(null);
 
       notifications.show({
         title: "Error",
@@ -70,66 +70,69 @@ const Poststable = ({ posts, data }: PoststableProps) => {
       });
     }
   };
-  const rows = posts
-    ? posts.map((row, index) => (
-        <tr key={index}>
-          <td>{row.id}</td>
-          <td>
-            <Image src={row.image} alt="image" width={100} height={100} />
-          </td>
-          <td>
-            <Text>{row.title}</Text>
-          </td>
-          <td>
-            <Text>{row.description}</Text>
-          </td>
-          <td>
-            {row.categories &&
-              row.categories.map((item, index) => (
-                <Text key={index}>{item.name}</Text>
-              ))}
-          </td>
-          <td>
-            <Text sx={() => ({ whiteSpace: "nowrap" })}>{row.created_at}</Text>
-          </td>
-          <td>
-            <Group>
-              <Tooltip label="view">
-                <ActionIcon
-                  href={"/dashboard/14-crud-operation/posts/" + row.id}
-                  component={Link}
-                >
-                  <IconEye />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label="edit">
-                <ActionIcon
-                  href={
-                    "/dashboard/14-crud-operation/posts/" + row.id + "/edit"
-                  }
-                  component={Link}
-                >
-                  <IconEdit />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label="delete">
-                <ActionIcon
-                  onClick={() => {
-                    setmodalDeleteOpened(true);
-                    setSelectedPost(row.id);
-                  }}
-                >
-                  <IconTrash />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
-          </td>
-        </tr>
-      ))
-    : null;
+  const rows =
+    posts.length > 0
+      ? posts.map((row, index) => (
+          <tr key={row.id}>
+            <td>{row.id}</td>
+            <td>
+              <Image src={row.image} alt="image" width={100} height={100} />
+            </td>
+            <td>
+              <Text>{row.title}</Text>
+            </td>
+            <td>
+              <Text>{row.description}</Text>
+            </td>
+            <td>
+              {row.categories &&
+                row.categories.map((item, index) => (
+                  <Text key={index}>{item.name}</Text>
+                ))}
+            </td>
+            <td>
+              <Text sx={() => ({ whiteSpace: "nowrap" })}>
+                {row.created_at}
+              </Text>
+            </td>
+            <td>
+              <Group>
+                <Tooltip label="view">
+                  <ActionIcon
+                    href={"/dashboard/14-crud-operation/posts/" + row.id}
+                    component={Link}
+                  >
+                    <IconEye />
+                  </ActionIcon>
+                </Tooltip>
+                <Tooltip label="edit">
+                  <ActionIcon
+                    href={
+                      "/dashboard/14-crud-operation/posts/" + row.id + "/edit"
+                    }
+                    component={Link}
+                  >
+                    <IconEdit />
+                  </ActionIcon>
+                </Tooltip>
+                <Tooltip label="delete">
+                  <ActionIcon
+                    onClick={() => {
+                      setmodalDeleteOpened(true);
+                      setSelectedPost(row.id);
+                    }}
+                  >
+                    <IconTrash />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+            </td>
+          </tr>
+        ))
+      : null;
   const ths = (
     <tr>
-      <th>#</th>
+      <th>id</th>
       <th>Image</th>
       <th>Title</th>
       <th>Description</th>
@@ -235,7 +238,7 @@ const Poststable = ({ posts, data }: PoststableProps) => {
                 component: Link,
                 href: `/dashboard/14-crud-operation/posts?page=${page}`,
               })}
-              value={data.current_page}
+              value={page}
             >
               <Group spacing={7} position="center" my="xl">
                 <Pagination.Previous
@@ -250,7 +253,7 @@ const Poststable = ({ posts, data }: PoststableProps) => {
                 <Pagination.Next
                   component={Link}
                   href={
-                    page === data.last_page
+                    page >= data.last_page
                       ? "#"
                       : `/dashboard/14-crud-operation/posts?page=${page + 1}`
                   }
