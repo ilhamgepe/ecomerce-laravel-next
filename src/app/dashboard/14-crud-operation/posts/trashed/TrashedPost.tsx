@@ -67,6 +67,14 @@ const TrashedPost = ({ posts, data }: TrashedPostProps) => {
             <Group>
               <Tooltip label="Restore">
                 <ActionIcon
+                  href={"/dashboard/14-crud-operation/posts/trashed/" + row.id}
+                  component={Link}
+                >
+                  <IconEye />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label="Restore">
+                <ActionIcon
                 // href={
                 //   "/dashboard/14-crud-operation/posts/" + row.id + "/edit"
                 // }

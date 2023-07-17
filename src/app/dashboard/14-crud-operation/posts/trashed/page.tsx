@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { Data } from "../../types";
 import TrashedPost from "./TrashedPost";
 import { Metadata } from "next";
-import { getTrashedPost } from "../server";
+import { getTrashedPosts } from "../server";
 
 export const metadata: Metadata = {
   title: "Trashed Post",
@@ -16,7 +16,8 @@ const TrashedPage = async ({
 }: {
   searchParams: { page: string };
 }) => {
-  const posts = await getTrashedPost(searchParams.page);
+  const posts = await getTrashedPosts(searchParams.page);
+  console.log({ posts });
 
   if (posts === null) {
     return <div>Post Not Found!</div>;

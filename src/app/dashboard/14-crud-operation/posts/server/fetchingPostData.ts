@@ -19,7 +19,7 @@ export const getPostWithId = cache(async (id: string): Promise<Post | null> => {
   }
 });
 
-export const getTrashedPost = cache(
+export const getTrashedPosts = cache(
   async (page?: string): Promise<Data | null> => {
     const session = await getServerSession(authOptions);
 
@@ -32,6 +32,22 @@ export const getTrashedPost = cache(
           },
         }
       );
+
+      return data.data;
+    } catch (error: any) {
+      return null;
+    }
+  }
+);
+export const getTrashedPostWithId = cache(
+  async (id: string): Promise<Post | null> => {
+    const session = await getServerSession(authOptions);
+    try {
+      const { data, status } = await axios.get("/S16/posts/trash/" + id, {
+        headers: {
+          Authorization: `Bearer ${session?.user.access_token}`,
+        },
+      });
 
       return data.data;
     } catch (error: any) {

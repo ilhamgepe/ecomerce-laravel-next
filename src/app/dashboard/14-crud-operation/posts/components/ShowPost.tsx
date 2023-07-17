@@ -1,10 +1,12 @@
 "use client";
 
-import { Box, Card, Container, Group, Text } from "@mantine/core";
+import { Box, Button, Card, Container, Group, Text } from "@mantine/core";
 import { Post } from "../../types";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const ShowPost = ({ post }: { post: Post }) => {
+  const route = useRouter();
   return (
     <Container fluid>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -23,6 +25,7 @@ const ShowPost = ({ post }: { post: Post }) => {
             <Text size={"xl"} weight={"bold"}>
               {post.title}
             </Text>
+            <Button onClick={() => route.back()}>back</Button>
           </Group>
         </Card.Section>
         <Container fluid>
