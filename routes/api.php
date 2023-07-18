@@ -5,7 +5,9 @@ use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\S13\FileStorageController;
 use App\Http\Controllers\api\S16\CategoryController;
 use App\Http\Controllers\api\S16\PostController;
+use App\Mail\OrderShipped;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +23,25 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// 19 Send mail
+Route::prefix('S19')->group(function () {
+    Route::post("send-mail", function () {
+        try {
+            // Mail::raw("Hello", function ($message) {
+            //     $message->to('t1z4t@example.com')->subject('memek');
+            // });
+
+            // pake email yang kita buat dengan make:mail
+            Mail::send(new OrderShipped);
+            return response()->json(['message' => 'Email sent successfully']);
+        } catch (\Exception $e) {
+            // Tangani exception di sini
+            // Misalnya, simpan pesan kesalahan dalam log atau berikan respons kesalahan yang sesuai
+            return response()->json(['error' => 'Failed to send email'], 500);
+        }
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {
